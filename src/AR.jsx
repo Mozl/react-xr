@@ -1,11 +1,7 @@
 import React from "react";
 import { Suspense } from "react";
-// import { Canvas, useThree, extend } from "@react-three/fiber";
-// import { OrbitControls } from "@react-three/drei";
 import { ARCanvas } from "@react-three/xr";
-// import { ARButton } from 'three/examples/jsm/webxr/ARButton';
-
-// extend({ ARButton });
+import WobblySphere from "./WobblySphere";
 
 function Box({ color, size, scale, children, ...rest }) {
   return (
@@ -31,13 +27,10 @@ const AR = () => {
             }),
           }}
         >
-          {/* <OrbitControls /> */}
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
-            <Box color="red" size={[1, 1, 1]} />
-            {/* <Sphere>
-              <meshBasicMaterial attach="material" color="hotpink" />
-            </Sphere> */}
+            <Box color="red" size={[0.5, 0.5, 0.5]} position={[-1, 0, -0.5]} />
+            <WobblySphere />
           </Suspense>
         </ARCanvas>
       </div>
