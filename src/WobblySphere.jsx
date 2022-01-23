@@ -41,7 +41,7 @@ const Icosahedron = ({ position, color1, color2, color3 }) => {
   });
 
   return (
-    <mesh position={position}>
+    <mesh scale={0.5} position={position}>
       <icosahedronBufferGeometry args={[1, 64]} />
       <vertexDisplacementShaderMaterial ref={ref} />
     </mesh>
