@@ -3,15 +3,15 @@ import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
 import WobblySphere from "./WobblySphere";
 
-function Box({ color, size, scale, children, ...rest }) {
-  return (
-    <mesh scale={scale} {...rest}>
-      <boxBufferGeometry attach="geometry" args={size} />
-      <meshPhongMaterial attach="material" color={color} />
-      {children}
-    </mesh>
-  );
-}
+// function Box({ color, size, scale, children, ...rest }) {
+//   return (
+//     <mesh scale={scale} {...rest}>
+//       <boxBufferGeometry attach="geometry" args={size} />
+//       <meshPhongMaterial attach="material" color={color} />
+//       {children}
+//     </mesh>
+//   );
+// }
 
 const AR = () => {
   return (
@@ -46,14 +46,5 @@ const AR = () => {
     </>
   );
 };
-
-// let ARButton;
-// const AREnv = () => {
-//   // ARButton = require('three/examples/jsm/webxr/ARButton').ARButton;
-//   const { gl } = useThree();
-//   const arButton = ARButton.createButton(gl);
-//   gl.xr.enabled = true;
-//   return <arButton />;
-// };
 
 export default AR;
