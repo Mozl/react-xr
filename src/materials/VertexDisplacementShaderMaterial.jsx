@@ -124,6 +124,9 @@ const VertexDisplacementShaderMaterial = shaderMaterial(
     uFrequency: 3,
     uAmplitude: 6,
     uIntensity: 7,
+    color1: 0,
+    color2: 0.1,
+    color3: 0.2,
   },
 
   // Vertex shader
@@ -165,6 +168,9 @@ const VertexDisplacementShaderMaterial = shaderMaterial(
     
     uniform float uTime;
     uniform float uIntensity;
+    uniform float color1;
+    uniform float color2;
+    uniform float color3;
     
     vec3 cosPalette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
       return a + b * cos(6.28318 * (c * t + d));
@@ -176,7 +182,7 @@ const VertexDisplacementShaderMaterial = shaderMaterial(
       vec3 brightness = vec3(0.5, 0.5, 0.5);
       vec3 contrast = vec3(0.5, 0.5, 0.5);
       vec3 oscilation = vec3(1, 1, 1);
-      vec3 phase = vec3(0, 0.1, 0.2);
+      vec3 phase = vec3(color1, color2, color3);
     
       vec3 color = cosPalette(distort, brightness, contrast, oscilation, phase);
       

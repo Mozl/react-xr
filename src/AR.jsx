@@ -3,16 +3,6 @@ import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
 import WobblySphere from "./WobblySphere";
 
-// function Box({ color, size, scale, children, ...rest }) {
-//   return (
-//     <mesh scale={scale} {...rest}>
-//       <boxBufferGeometry attach="geometry" args={size} />
-//       <meshPhongMaterial attach="material" color={color} />
-//       {children}
-//     </mesh>
-//   );
-// }
-
 const AR = () => {
   return (
     <>
@@ -29,8 +19,7 @@ const AR = () => {
         >
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
-            {/* <Box color="red" size={[0.5, 0.5, 0.5]} position={[-1, 0, -0.5]} /> */}
-            <WobblySphere />
+            <WobblySphere position={[0, 0.1, -1.2]} />
           </Suspense>
         </ARCanvas>
       </div>
