@@ -68,7 +68,7 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
+    "start": "NODE_ENV=development HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
     "build": "NODE_ENV=production node scripts/build.js",
     "test": "node scripts/test.js"
   },
