@@ -1,5 +1,5 @@
-import { shaderMaterial } from '@react-three/drei';
-import glsl from 'babel-plugin-glsl/macro';
+import { shaderMaterial } from "../shaderMaterial";
+import glsl from "babel-plugin-glsl/macro";
 
 const noise = `
   vec3 mod289(vec3 x)
@@ -123,7 +123,7 @@ const VertexDisplacementShaderMaterial = shaderMaterial(
     uNoiseStrength: 0.2,
     uFrequency: 3,
     uAmplitude: 6,
-    uIntensity: 7
+    uIntensity: 7,
   },
 
   // Vertex shader
