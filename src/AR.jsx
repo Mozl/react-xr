@@ -29,7 +29,7 @@ const AR = () => {
         >
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
-            <Box color="red" size={[0.5, 0.5, 0.5]} position={[-1, 0, -0.5]} />
+            {/* <Box color="red" size={[0.5, 0.5, 0.5]} position={[-1, 0, -0.5]} /> */}
             <WobblySphere />
           </Suspense>
         </ARCanvas>

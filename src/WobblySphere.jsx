@@ -11,7 +11,6 @@ const WobblySphere = () => (
     <Suspense fallback={null}>
       <Icosahedron />
     </Suspense>
-    <style jsx>{``}</style>
   </>
 );
 
