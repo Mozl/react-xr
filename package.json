@@ -141,6 +141,16 @@
     ]
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "overrides": [
+      {
+        "files": [
+          "*"
+        ],
+        "rules": {
+          "no-unused-vars": "off"
+        }
+      }
+    ]
   }
 }
