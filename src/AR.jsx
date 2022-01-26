@@ -21,7 +21,7 @@ const AR = () => {
         >
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
-            <WobblySphere position={[0, 0.1, -1.2]} />
+            {/* <WobblySphere position={[0, 0.1, -1.2]} /> */}
             <HitTestReticle />
           </Suspense>
         </ARCanvas>
