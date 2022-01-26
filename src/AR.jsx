@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
-import WobblySphere from "./WobblySphere";
 import HitTestReticle from "./HitTestReticle";
 
 const AR = () => {
+  const [reticlePosition, setReticlePosition] = useState([]);
+  const [objectList, setObjectList] = useState([]);
+  const handleSelect = (reticlePos) => {
+    setObjectList(
+      objectList.concat(
+        <>
+          <mesh position={reticlePos}>
+            <boxGeometry />
+            <meshBasicMaterial />
+          </mesh>
+        </>
+      )
+    );
+  };
   return (
     <>
       <div className="three">
@@ -21,8 +34,11 @@ const AR = () => {
         >
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
-            {/* <WobblySphere position={[0, 0.1, -1.2]} /> */}
-            <HitTestReticle />
+            <HitTestReticle
+              setReticlePosition={setReticlePosition}
+              handleSelect={() => handleSelect(reticlePosition)}
+            />
+            {objectList}
           </Suspense>
         </ARCanvas>
       </div>
