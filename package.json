@@ -69,7 +69,7 @@
   },
   "scripts": {
     "start": "NODE_ENV=development HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
-    "build": "NODE_ENV=production node scripts/build.js",
+    "build": "NODE_ENV=development node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "browserslist": {
