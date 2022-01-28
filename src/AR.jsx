@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
 import HitTestReticle from "./HitTestReticle";
+import ARSceneTest from "./ARSceneTest";
 
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
@@ -10,10 +11,11 @@ const AR = () => {
     setObjectList(
       objectList.concat(
         <>
-          <mesh position={reticlePos}>
+          {/* <mesh position={reticlePos}>
             <boxGeometry />
             <meshBasicMaterial />
-          </mesh>
+          </mesh> */}
+          <ARSceneTest position={reticlePos} />
         </>
       )
     );
@@ -39,6 +41,7 @@ const AR = () => {
               handleSelect={() => handleSelect(reticlePosition)}
             />
             {objectList}
+            <ARSceneTest position={[0, 0, 0]} />
           </Suspense>
         </ARCanvas>
       </div>

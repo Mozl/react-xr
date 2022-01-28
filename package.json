@@ -68,8 +68,8 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "NODE_ENV=development HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
-    "build": "NODE_ENV=development node scripts/build.js",
+    "start": "NODE_ENV=development DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
+    "build": "NODE_ENV=development DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "browserslist": {
