@@ -26,6 +26,7 @@ const AR = () => {
         <ARCanvas
           camera={{ fov: 30 }}
           shadows
+          shadowMap
           raycaster={{
             computeOffsets: ({ clientX, clientY }) => ({
               offsetX: clientX,
@@ -41,7 +42,7 @@ const AR = () => {
               handleSelect={() => handleSelect(reticlePosition)}
             />
             {objectList}
-            <ARSceneTest position={[0, 0, 0]} />
+            <ARSceneTest position={[0, -2, -3]} rotation={[0, -70.5, 0]} />
           </Suspense>
         </ARCanvas>
       </div>

@@ -35,7 +35,7 @@ const reactRefreshRuntimeEntry = require.resolve("react-refresh/runtime");
 const reactRefreshWebpackPluginRuntimeEntry = require.resolve(
   "@pmmmwh/react-refresh-webpack-plugin"
 );
-const babelRuntimeEntry = require.resolve("babel-preset-react-app");
+const babelRuntimeEntry = require.resolve("@babel/preset-env");
 const babelRuntimeEntryHelpers = require.resolve(
   "@babel/runtime/helpers/esm/assertThisInitialized",
   { paths: [babelRuntimeEntry] }
