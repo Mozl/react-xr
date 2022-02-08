@@ -7,7 +7,13 @@ export default function Model({ ...props }) {
   const { actions } = useAnimations(animations, group);
   actions?.SuzanneAction?.play();
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group
+      ref={group}
+      {...props}
+      dispose={null}
+      position={[0, -2, -3]}
+      rotation={[0, -70.5, 0]}
+    >
       <group renderOrder={3}>
         <mesh
           receiveShadow

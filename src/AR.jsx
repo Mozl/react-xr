@@ -1,21 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
 import HitTestReticle from "./HitTestReticle";
-import ARSceneTest from "./ARSceneTest";
 
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
+  console.log("objectList: ", objectList);
+  const [wsObjectList, setWsObjectList] = useState([]);
+  const ws = new WebSocket("ws://localhost:8080");
+
+  useEffect(() => {
+    setObjectList(
+      objectList.concat(
+        <>
+          <mesh position={[0, -1.6, -3.3]}>
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
+            <meshBasicMaterial />
+          </mesh>
+        </>,
+        <>
+          <mesh position={[-1, -1.6, -3.3]}>
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
+            <meshBasicMaterial />
+          </mesh>
+        </>,
+        <>
+          <mesh position={[1, -1.6, -3.3]}>
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
+            <meshBasicMaterial />
+          </mesh>
+        </>
+      )
+    );
+  }, []);
+
+  ws.onmessage = (event) => {
+    console.log("event: ", event);
+    // setObjectList(JSON.parse(event.data).data);
+    console.log("parsed message from ws server:", JSON.parse(event));
+    // setWsObjectList(
+    //   wsObjectList.concat(
+    //     <>
+    //       <mesh position={reticlePos}>
+    //         <boxGeometry args={[0.5, 0.5, 0.5]} />
+    //         <meshBasicMaterial />
+    //       </mesh>
+    //     </>
+    //   )
+    // );
+  };
+
+  // listen onmessage for updates from websocket
+  // when update comes in, sort the update into buckets per uuid
+  // per uuid, have an array of coordinates of boxes
+  // render each array of coordinates, rerender if array is updated
+
   const handleSelect = (reticlePos) => {
     setObjectList(
       objectList.concat(
         <>
-          {/* <mesh position={reticlePos}>
-            <boxGeometry />
+          <mesh position={reticlePos}>
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
             <meshBasicMaterial />
-          </mesh> */}
-          <ARSceneTest position={reticlePos} />
+          </mesh>
         </>
       )
     );
@@ -42,7 +90,7 @@ const AR = () => {
               handleSelect={() => handleSelect(reticlePosition)}
             />
             {objectList}
-            <ARSceneTest position={[0, -2, -3]} rotation={[0, -70.5, 0]} />
+            {wsObjectList}
           </Suspense>
         </ARCanvas>
       </div>
