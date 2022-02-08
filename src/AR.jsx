@@ -8,20 +8,12 @@ const ws = new WebSocket("ws://localhost:8080");
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
-  const [positions, setPositions] = useState([]);
-  console.log("positions: ", positions);
-  console.log("objectList: ", objectList);
   const [wsObjectList, setWsObjectList] = useState([]);
-  console.log("wsObjectList: ", wsObjectList);
   const id = uuid();
 
   ws.onmessage = ({ data }) => {
-    console.log("data: ", data);
-    console.log("data from ws: ", JSON.parse(data));
     data = JSON.parse(data);
     const positionFromWs = [data.x, data.y, data.z];
-    console.log("positionFromWs: ", positionFromWs);
-    const isNotVisible = positions.includes(data);
 
     setWsObjectList(
       wsObjectList.concat(
@@ -33,12 +25,9 @@ const AR = () => {
         </>
       )
     );
-    console.log("isNotVisible: ", isNotVisible);
   };
 
   const handleSelect = (reticlePos) => {
-    console.log("reticlePos: ", reticlePos);
-    setPositions(positions.concat(reticlePos));
     const objToSend = {
       ...reticlePos,
       id,
