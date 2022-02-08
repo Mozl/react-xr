@@ -22,6 +22,7 @@
     "browserslist": "^4.18.1",
     "camelcase": "^6.2.1",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
+    "concurrently": "^7.0.0",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
     "dotenv": "^10.0.0",
@@ -30,11 +31,13 @@
     "eslint": "^7.32.0",
     "eslint-config-react-app": "^7.0.0",
     "eslint-webpack-plugin": "^3.1.1",
+    "express": "^4.17.2",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
     "glsl-noise": "^0.0.0",
     "glslify": "^7.1.1",
     "html-webpack-plugin": "^5.5.0",
+    "https": "^1.0.0",
     "identity-obj-proxy": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
     "jest": "^27.4.3",
@@ -72,7 +75,7 @@
     "ws": "^8.4.2"
   },
   "scripts": {
-    "start": "BROWSER=none NODE_ENV=development DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem node scripts/start.js",
+    "start": "BROWSER=none NODE_ENV=development DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem concurrently --kill-others \"node scripts/server.mjs\" \"node scripts/start.js\"",
     "build": "NODE_ENV=development DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
     "test": "node scripts/test.js"
   },

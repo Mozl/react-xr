@@ -1,16 +1,23 @@
-import WebSocket, { WebSocketServer } from "ws";
 import { v4 as uuid } from "uuid";
+import WebSocket, { WebSocketServer } from "ws";
+import express from "express";
 
-const wss = new WebSocketServer({ port: 8080 });
+const PORT = process.env.PORT || 8080;
+const INDEX = "build/index.html";
+
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+const wss = new WebSocketServer({ server });
 
 wss.on("connection", function connection(ws) {
   ws.id = uuid();
 
   ws.on("message", function message(info, isBinary) {
     wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        if (client !== ws)
-          client.send(info.toString("utf8"), { binary: isBinary });
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(info.toString("utf8"), { binary: isBinary });
       }
     });
   });
