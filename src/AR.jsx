@@ -17,14 +17,14 @@ const AR = () => {
     console.log("data: ", data);
     console.log("data from ws: ", JSON.parse(data));
     data = JSON.parse(data);
-    const positionFromWs = [data.x * 1.3, data.y + 0.7, data.z];
+    const positionFromWs = [data.x, data.y, data.z];
     console.log("positionFromWs: ", positionFromWs);
 
     setWsObjectList(
       wsObjectList.concat(
         <>
           <mesh position={positionFromWs}>
-            <boxGeometry args={[0.7, 0.5, 0.5]} />
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
             <meshBasicMaterial color={"red"} />
           </mesh>
         </>
