@@ -8,6 +8,8 @@ const ws = new WebSocket("ws://localhost:8080");
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
+  const [positions, setPositions] = useState([]);
+  console.log("positions: ", positions);
   console.log("objectList: ", objectList);
   const [wsObjectList, setWsObjectList] = useState([]);
   console.log("wsObjectList: ", wsObjectList);
@@ -19,6 +21,7 @@ const AR = () => {
     data = JSON.parse(data);
     const positionFromWs = [data.x, data.y, data.z];
     console.log("positionFromWs: ", positionFromWs);
+    const isNotVisible = positions.includes(data);
 
     setWsObjectList(
       wsObjectList.concat(
@@ -30,15 +33,12 @@ const AR = () => {
         </>
       )
     );
+    console.log("isNotVisible: ", isNotVisible);
   };
-
-  // listen onmessage for updates from websocket
-  // when update comes in, sort the update into buckets per uuid
-  // per uuid, have an array of coordinates of boxes
-  // render each array of coordinates, rerender if array is updated
 
   const handleSelect = (reticlePos) => {
     console.log("reticlePos: ", reticlePos);
+    setPositions(positions.concat(reticlePos));
     const objToSend = {
       ...reticlePos,
       id,
