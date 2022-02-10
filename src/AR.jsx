@@ -6,7 +6,7 @@ import { v4 as uuid } from "uuid";
 
 // const PORT = process.env.NODE_ENV === 'production' ? "ws://localhost:80"
 
-const ws = new WebSocket("ws://xr-websocket.herokuapp.com");
+const ws = new WebSocket("wss://xr-websocket.herokuapp.com");
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
