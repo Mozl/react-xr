@@ -4,12 +4,21 @@ import { ARCanvas } from "@react-three/xr";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 
-const ws = new WebSocket("ws://localhost:8080");
+// const PORT = process.env.NODE_ENV === 'production' ? "ws://localhost:80"
+
+const ws = new WebSocket("ws://xr-websocket.herokuapp.com");
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
   const id = uuid();
+  // setTimeout(() => {
+  //   console.log("sending some coords");
+
+  //   ws.send(
+  //     JSON.stringify({ x: 0, y: -1.600000023841858, z: -3.422672986984253 })
+  //   );
+  // }, 5000);
 
   ws.onmessage = ({ data }) => {
     data = JSON.parse(data);
@@ -32,6 +41,7 @@ const AR = () => {
       ...reticlePos,
       id,
     };
+    console.log("objToSend: ", objToSend);
     ws.send(JSON.stringify(objToSend));
     setObjectList(
       objectList.concat(
