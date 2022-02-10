@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import WebSocket, { WebSocketServer } from "ws";
 import express from "express";
 
-const PORT = process.env.PORT || 8080;
+const PORT = 8080;
 const INDEX = "build/index.html";
 
 const server = express()

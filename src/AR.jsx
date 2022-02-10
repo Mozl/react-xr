@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas } from "@react-three/xr";
 import HitTestReticle from "./HitTestReticle";
