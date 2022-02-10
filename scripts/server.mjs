@@ -5,6 +5,8 @@ import express from "express";
 const PORT = 8080;
 const INDEX = "build/index.html";
 
+console.log("before express.use()");
+
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
