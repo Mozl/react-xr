@@ -1,6 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Suspense } from "react";
-import { ARCanvas, Interactive, useInteraction } from "@react-three/xr";
+import { ARCanvas, Interactive } from "@react-three/xr";
+import { Text, Html } from "@react-three/drei";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 
@@ -32,8 +33,10 @@ const AR = () => {
       )
     );
   };
-
+  //fdddsssssssss
   const handleSelect = (reticlePos) => {
+    // x- left(-)/right(+), z - back(-)/forward(+), y - down(-)/up(+)
+    console.log("reticlePos: ", reticlePos);
     const objToSend = {
       ...reticlePos,
       id,
@@ -48,6 +51,15 @@ const AR = () => {
           }}
         >
           <mesh position={reticlePos}>
+            {/* <Text
+              position={reticlePos}
+              fontSize={5}
+              color="#d0ff00"
+              anchorX="center"
+              anchorY="middle"
+            >
+              Hello react-xr!
+            </Text> */}
             <boxGeometry args={[0.5, 0.5, 0.5]} />
             <meshBasicMaterial color={boxColor} />
           </mesh>
@@ -71,6 +83,11 @@ const AR = () => {
           }}
           sessionInit={{ requiredFeatures: ["hit-test"] }}
         >
+          <Html position={reticlePosition}>
+            <button onClick={() => ws.send(JSON.stringify({ msg: "clear" }))}>
+              Clear
+            </button>
+          </Html>
           <ambientLight intensity={1} />
           <Suspense fallback={null}>
             <HitTestReticle
