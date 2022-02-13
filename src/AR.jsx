@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Suspense } from "react";
-import { ARCanvas } from "@react-three/xr";
+import { ARCanvas, Interactive, useInteraction } from "@react-three/xr";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 
-// const PORT = process.env.NODE_ENV === 'production' ? "ws://localhost:80"
+const isProduction = process.env.NODE_ENV === "production";
+const url = isProduction
+  ? "wss://xr-websocket.herokuapp.com"
+  : "ws://localhost:8080";
 
-const ws = new WebSocket("wss://xr-websocket.herokuapp.com");
+const ws = new WebSocket(url);
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
+  const [boxColor, setBoxColor] = useState("#76eec6");
   const id = uuid();
-  // setTimeout(() => {
-  //   console.log("sending some coords");
-
-  //   ws.send(
-  //     JSON.stringify({ x: 0, y: -1.600000023841858, z: -3.422672986984253 })
-  //   );
-  // }, 5000);
 
   ws.onmessage = ({ data }) => {
     data = JSON.parse(data);
@@ -41,16 +38,20 @@ const AR = () => {
       ...reticlePos,
       id,
     };
-    console.log("objToSend: ", objToSend);
     ws.send(JSON.stringify(objToSend));
     setObjectList(
       objectList.concat(
-        <>
+        <Interactive
+          onSelect={() => {
+            console.log("tap on box");
+            setBoxColor("#910c96");
+          }}
+        >
           <mesh position={reticlePos}>
             <boxGeometry args={[0.5, 0.5, 0.5]} />
-            <meshBasicMaterial color={"blue"} />
+            <meshBasicMaterial color={boxColor} />
           </mesh>
-        </>
+        </Interactive>
       )
     );
   };

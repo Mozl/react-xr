@@ -75,10 +75,10 @@
     "ws": "^8.4.2"
   },
   "scripts": {
-    "start": "BROWSER=none NODE_ENV=production DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem concurrently --kill-others \"npm run build && node scripts/start.js\"",
+    "start": "BROWSER=none NODE_ENV=production DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem concurrently --kill-others \"node scripts/start.js\"",
     "build": "NODE_ENV=production DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
     "test": "node scripts/test.js",
-    "start:dev": "BROWSER=none NODE_ENV=development DISABLE_ESLINT_PLUGIN=true HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem concurrently --kill-others \"node scripts/server.mjs\" \"node scripts/start.js\""
+    "start:dev": "BROWSER=none NODE_ENV=development DISABLE_ESLINT_PLUGIN=true node scripts/start.js"
   },
   "browserslist": {
     "production": [
