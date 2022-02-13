@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas, Interactive } from "@react-three/xr";
-import { Text, Html } from "@react-three/drei";
+import { Text, Html, Environment } from "@react-three/drei";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 
@@ -11,12 +11,14 @@ const url = isProduction
   : "ws://localhost:8080";
 
 const ws = new WebSocket(url);
+const id = uuid().substring(0, 5);
+
 const AR = () => {
   const [reticlePosition, setReticlePosition] = useState([]);
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
+  const [clearText, setClearText] = useState("Clear");
   const [boxColor, setBoxColor] = useState("#76eec6");
-  const id = uuid();
 
   ws.onmessage = ({ data }) => {
     data = JSON.parse(data);
@@ -26,16 +28,32 @@ const AR = () => {
       wsObjectList.concat(
         <>
           <mesh position={positionFromWs}>
+            <Text
+              position={[0, 0.5, 0]}
+              fontSize={0.4}
+              color="#008cff"
+              transform
+              occlude
+            >
+              {data?.id}
+            </Text>
+            <spotLight
+              position={[10, 10, 10]}
+              angle={0.15}
+              penumbra={1}
+              shadow-mapSize={[512, 512]}
+              castShadow
+            />
             <boxGeometry args={[0.5, 0.5, 0.5]} />
-            <meshBasicMaterial color={"red"} />
+            <meshPhongMaterial shininess={100} color={"red"} />
           </mesh>
         </>
       )
     );
   };
-  //fdddsssssssss
+
   const handleSelect = (reticlePos) => {
-    // x- left(-)/right(+), z - back(-)/forward(+), y - down(-)/up(+)
+    // x- left(-)/right(+), y - down(-)/up(+), z - back(-)/forward(+)
     console.log("reticlePos: ", reticlePos);
     const objToSend = {
       ...reticlePos,
@@ -51,17 +69,26 @@ const AR = () => {
           }}
         >
           <mesh position={reticlePos}>
-            {/* <Text
-              position={reticlePos}
-              fontSize={5}
+            <Text
+              position={[0, 0.5, 0]}
+              fontSize={0.4}
               color="#d0ff00"
               anchorX="center"
               anchorY="middle"
+              transform
+              occlude
             >
-              Hello react-xr!
-            </Text> */}
+              {id}
+            </Text>
+            <spotLight
+              position={[10, 10, 10]}
+              angle={0.15}
+              penumbra={1}
+              shadow-mapSize={[512, 512]}
+              castShadow
+            />
             <boxGeometry args={[0.5, 0.5, 0.5]} />
-            <meshBasicMaterial color={boxColor} />
+            <meshPhongMaterial shininess={100} color={boxColor} />
           </mesh>
         </Interactive>
       )
@@ -72,7 +99,7 @@ const AR = () => {
     <>
       <div className="three">
         <ARCanvas
-          camera={{ fov: 30 }}
+          camera={{ fov: 50 }}
           shadows
           shadowMap
           raycaster={{
@@ -83,13 +110,29 @@ const AR = () => {
           }}
           sessionInit={{ requiredFeatures: ["hit-test"] }}
         >
-          <Html position={reticlePosition}>
-            <button onClick={() => ws.send(JSON.stringify({ msg: "clear" }))}>
-              Clear
-            </button>
-          </Html>
-          <ambientLight intensity={1} />
           <Suspense fallback={null}>
+            <Html position={reticlePosition}>
+              <button
+                className="clearButton"
+                onClick={() => {
+                  ws.send(JSON.stringify({ msg: "clear" }));
+                  setClearText("Cleared");
+                }}
+              >
+                {clearText}
+              </button>
+              <div className="username">Your username: {id}</div>
+            </Html>
+            <ambientLight intensity={0.5} />
+            <spotLight
+              position={[10, 10, 10]}
+              angle={0.15}
+              penumbra={1}
+              shadow-mapSize={[512, 512]}
+              castShadow
+            />
+            <Environment preset="city" />
+
             <HitTestReticle
               setReticlePosition={setReticlePosition}
               handleSelect={() => handleSelect(reticlePosition)}
@@ -106,6 +149,25 @@ const AR = () => {
         }
         .wave {
           height: 100vh;
+        }
+        .clearButton {
+          position: absolute;
+          padding: 15px 32px;
+          font-size: 16px;
+          left: 30px;
+          top: 30px;
+          text-decoration: none;
+          border: none;
+        }
+        .clearButton:active {
+          background-color: lightblue;
+        }
+        .username {
+          position: absolute;
+          font-size: 16px;
+          left: 160px;
+          top: 37px;
+          width: 120px;
         }
       `}</style>
     </>
