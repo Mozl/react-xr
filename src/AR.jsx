@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Suspense } from "react";
 import { ARCanvas, Interactive } from "@react-three/xr";
 import { Text, Html, Environment } from "@react-three/drei";
+import MyTreasureChest from "./MyTreasureChest";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 
@@ -18,7 +19,6 @@ const AR = () => {
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
   const [clearText, setClearText] = useState("Clear");
-  const [boxColor, setBoxColor] = useState("#76eec6");
 
   ws.onmessage = ({ data }) => {
     data = JSON.parse(data);
@@ -44,8 +44,7 @@ const AR = () => {
               shadow-mapSize={[512, 512]}
               castShadow
             />
-            <boxGeometry args={[0.5, 0.5, 0.5]} />
-            <meshPhongMaterial shininess={100} color={"red"} />
+            <MyTreasureChest scale={[0.3, 0.3, 0.3]} />
           </mesh>
         </>
       )
@@ -65,7 +64,6 @@ const AR = () => {
         <Interactive
           onSelect={() => {
             console.log("tap on box");
-            setBoxColor("#910c96");
           }}
         >
           <mesh position={reticlePos}>
@@ -87,8 +85,7 @@ const AR = () => {
               shadow-mapSize={[512, 512]}
               castShadow
             />
-            <boxGeometry args={[0.5, 0.5, 0.5]} />
-            <meshPhongMaterial shininess={100} color={boxColor} />
+            <MyTreasureChest scale={[0.3, 0.3, 0.3]} />
           </mesh>
         </Interactive>
       )
