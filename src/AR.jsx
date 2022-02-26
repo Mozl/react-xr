@@ -7,6 +7,7 @@ import CameraControls from "./CameraControls";
 import HitTestReticle from "./HitTestReticle";
 import { v4 as uuid } from "uuid";
 import { Physics, useSphere, useBox, Debug } from "@react-three/cannon";
+import { useFrame } from "@react-three/fiber";
 
 const isProduction = process.env.NODE_ENV === "production";
 const url = isProduction
@@ -26,13 +27,12 @@ function Ball({ reticlePos, spawnBall }) {
   return (
     <Interactive
       onSelect={() => {
-        console.log("box tapped on");
-        api.applyForce([0, 50, -20], [0, 0, 0]);
+        api.applyForce([0, 400, -470], [0, 0, 0]);
+        spawnBall();
       }}
     >
       <Sphere
         onClick={() => {
-          console.log("box clicked");
           api.applyForce([0, 400, -470], [0, 0, 0]);
           spawnBall();
         }}
@@ -57,14 +57,18 @@ const Ground = ({ reticlePos }) => {
 };
 
 const BallPlatform = ({ reticlePos }) => {
-  useBox(() => ({
+  const [ref] = useBox(() => ({
     args: [1, 1, 0.1],
     position: [reticlePos.x, reticlePos.y + 1, reticlePos.z + 2],
     rotation: [-Math.PI / 2, 0, 0],
     type: "Static",
   }));
 
-  return null;
+  return (
+    <Box ref={ref} args={[0.5, 0.5, 0.1]}>
+      <meshStandardMaterial color="grey" />
+    </Box>
+  );
 };
 
 const AR = () => {
@@ -74,6 +78,7 @@ const AR = () => {
   const [clearText, setClearText] = useState("Clear");
   const [score, setScore] = useState(0);
   const [balls, setBalls] = useState(["uuid"]);
+
   const spawnBall = useCallback(
     (e) => setBalls((balls) => [...balls, uuid()]),
     []
@@ -118,32 +123,32 @@ const AR = () => {
     ws.send(JSON.stringify(objToSend));
     setObjectList(
       objectList.concat(
-        <Interactive
-          onSelect={() => {
-            console.log("tap on box");
-          }}
-        >
-          <mesh position={reticlePos}>
-            <Text
-              position={[0, 0.5, 0]}
-              fontSize={0.4}
-              color="#d0ff00"
-              anchorX="center"
-              anchorY="middle"
-              transform
-              occlude
-            >
-              {id}
-            </Text>
-            <MyTreasureChest
-              physicsPosition={reticlePosition}
-              // scale={[0.3, 0.3, 0.3]}
-              scale={[1.5, 1.5, 1.5]}
-              score={score}
-              setScore={setScore}
-            />
-          </mesh>
-        </Interactive>
+        // <Interactive
+        //   onSelect={() => {
+        //     console.log("tap on reticle");
+        //   }}
+        // >
+        <mesh position={reticlePos}>
+          <Text
+            position={[0, 0.5, 0]}
+            fontSize={0.4}
+            color="#d0ff00"
+            anchorX="center"
+            anchorY="middle"
+            transform
+            occlude
+          >
+            {id}
+          </Text>
+          <MyTreasureChest
+            physicsPosition={reticlePosition}
+            // scale={[0.3, 0.3, 0.3]}
+            scale={[1.5, 1.5, 1.5]}
+            score={score}
+            setScore={setScore}
+          />
+        </mesh>
+        // </Interactive>
       )
     );
   };
@@ -174,50 +179,50 @@ const AR = () => {
             >
               {clearText}
             </button>
-            <div className="username">Your username: {id}</div>
+            <div className="username">Username: {id}</div>
             <div className="score">Score: {score}</div>
           </Html>
           <Physics
             gravity={[0, -30, 0]}
             defaultContactMaterial={{ restitution: 0.7 }}
           >
-            <Debug scale={1}>
-              <Suspense fallback={null}>
-                <ambientLight intensity={0.5} />
-                <Environment preset="city" />
-                {balls.map((key, index) => (
-                  <Ball
-                    key={key}
-                    // reticlePos={{
-                    //   x: 0,
-                    //   y: -1.600000023841858,
-                    //   z: -3.388284921646118,
-                    // }}
-                    reticlePos={reticlePosition}
-                    spawnBall={spawnBall}
-                  />
-                ))}
-                <Ground
-                  // reticlePos={{
-                  //   x: 0,
-                  //   y: -1.600000023841858,
-                  //   z: -3.388284921646118,
-                  // }}
-                  reticlePos={reticlePosition}
+            {/* <Debug scale={1}> */}
+            <Suspense fallback={null}>
+              <ambientLight intensity={0.5} />
+              <Environment preset="city" />
+              {balls.map((key, index) => (
+                <Ball
+                  key={key}
+                  reticlePos={{
+                    x: 0,
+                    y: -1.600000023841858,
+                    z: -3.388284921646118,
+                  }}
+                  // reticlePos={reticlePosition}
+                  spawnBall={spawnBall}
                 />
-                <BallPlatform
-                  // reticlePos={{
-                  //   x: 0,
-                  //   y: -1.600000023841858,
-                  //   z: -3.388284921646118,
-                  // }}
-                  reticlePos={reticlePosition}
-                />
-                <HitTestReticle
-                  setReticlePosition={setReticlePosition}
-                  handleSelect={() => handleSelect(reticlePosition)}
-                />
-                {/* <MyTreasureChest
+              ))}
+              <Ground
+                // reticlePos={{
+                //   x: 0,
+                //   y: -1.600000023841858,
+                //   z: -3.388284921646118,
+                // }}
+                reticlePos={reticlePosition}
+              />
+              <BallPlatform
+                reticlePos={{
+                  x: 0,
+                  y: -1.600000023841858,
+                  z: -3.388284921646118,
+                }}
+                // reticlePos={reticlePosition}
+              />
+              <HitTestReticle
+                setReticlePosition={setReticlePosition}
+                handleSelect={() => handleSelect(reticlePosition)}
+              />
+              {/* <MyTreasureChest
                   physicsPosition={{
                     x: 0,
                     y: -1.600000023841858,
@@ -226,10 +231,10 @@ const AR = () => {
                   score={score}
                   setScore={setScore}
                 /> */}
-                {objectList}
-                {wsObjectList}
-              </Suspense>
-            </Debug>
+              {objectList}
+              {wsObjectList}
+            </Suspense>
+            {/* </Debug> */}
           </Physics>
         </ARCanvas>
       </div>
@@ -263,8 +268,8 @@ const AR = () => {
         .score {
           position: absolute;
           font-size: 16px;
-          left: 320px;
-          top: 37px;
+          left: 160px;
+          top: 80px;
           width: 120px;
         }
       `}</style>
