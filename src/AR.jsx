@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { Suspense, useCallback } from "react";
+import React, { useState, Suspense, useCallback } from "react";
 import { ARCanvas, Interactive } from "@react-three/xr";
+import { Physics, useSphere, useBox } from "@react-three/cannon";
 import { Text, Html, Environment, Box, Sphere } from "@react-three/drei";
+import { v4 as uuid } from "uuid";
 import MyTreasureChest from "./MyTreasureChest";
 import CameraControls from "./CameraControls";
 import HitTestReticle from "./HitTestReticle";
-import { v4 as uuid } from "uuid";
-import { Physics, useSphere, useBox, Debug } from "@react-three/cannon";
-import { useFrame } from "@react-three/fiber";
 
 const isProduction = process.env.NODE_ENV === "production";
 const url = isProduction
@@ -16,34 +14,45 @@ const url = isProduction
 
 const ws = new WebSocket(url);
 const id = uuid().substring(0, 5);
+localStorage.setItem("score", 0);
 
-function Ball({ reticlePos, spawnBall }) {
+const randomIntFromInterval = (min, max) => Math.random() * (max - min) + min;
+
+const Ball = ({ reticlePos, spawnBall, incrementScore }) => {
   const [ref, api] = useSphere(() => ({
     mass: 1,
-    position: [reticlePos.x, reticlePos.y + 3, reticlePos.z + 2],
-    args: [0.06, 10, 10],
+    position: [reticlePos.x, reticlePos.y + 2, reticlePos.z + 2.4],
+    args: [0.06, 6, 6],
   }));
 
   return (
     <Interactive
       onSelect={() => {
-        api.applyForce([0, 400, -470], [0, 0, 0]);
+        api.applyForce(
+          [0, 400, -470],
+          [randomIntFromInterval(-0.01, 0.01), 0, 0]
+        );
+        // incrementScore();
         spawnBall();
       }}
     >
       <Sphere
         onClick={() => {
-          api.applyForce([0, 400, -470], [0, 0, 0]);
+          api.applyForce(
+            [0, 400, -470],
+            [randomIntFromInterval(-0.01, 0.01), 0, 0]
+          );
+          incrementScore();
           spawnBall();
         }}
         ref={ref}
-        args={[0.06, 10, 10]}
+        args={[0.06, 6, 6]}
       >
-        <meshStandardMaterial roughness={0.01} color="red" />
+        <meshStandardMaterial color="red" />
       </Sphere>
     </Interactive>
   );
-}
+};
 
 const Ground = ({ reticlePos }) => {
   useBox(() => ({
@@ -56,18 +65,31 @@ const Ground = ({ reticlePos }) => {
   return null;
 };
 
-const BallPlatform = ({ reticlePos }) => {
+const BallPlatform = ({ reticlePos, score }) => {
   const [ref] = useBox(() => ({
     args: [1, 1, 0.1],
-    position: [reticlePos.x, reticlePos.y + 1, reticlePos.z + 2],
+    position: [reticlePos.x, reticlePos.y + 1, reticlePos.z + 2.4],
     rotation: [-Math.PI / 2, 0, 0],
     type: "Static",
   }));
 
   return (
-    <Box ref={ref} args={[0.5, 0.5, 0.1]}>
-      <meshStandardMaterial color="grey" />
-    </Box>
+    <mesh>
+      <Text
+        position={[0, -0.6, -0.65]}
+        fontSize={0.1}
+        color="#ff1100"
+        anchorX="center"
+        anchorY="middle"
+        transform
+        occlude
+      >
+        Score: {score}
+      </Text>
+      <Box ref={ref} args={[0.5, 0.5, 0.1]}>
+        <meshStandardMaterial color="grey" />
+      </Box>
+    </mesh>
   );
 };
 
@@ -76,7 +98,10 @@ const AR = () => {
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
   const [clearText, setClearText] = useState("Clear");
-  const [score, setScore] = useState(0);
+  let score = localStorage.getItem("score");
+  const incrementScore = () => {
+    localStorage.setItem("score", ++score);
+  };
   const [balls, setBalls] = useState(["uuid"]);
 
   const spawnBall = useCallback(
@@ -104,8 +129,7 @@ const AR = () => {
             <MyTreasureChest
               physicsPosition={positionFromWs}
               scale={[0.3, 0.3, 0.3]}
-              score={score}
-              setScore={setScore}
+              incrementScore={incrementScore}
             />
           </mesh>
         </>
@@ -123,11 +147,6 @@ const AR = () => {
     ws.send(JSON.stringify(objToSend));
     setObjectList(
       objectList.concat(
-        // <Interactive
-        //   onSelect={() => {
-        //     console.log("tap on reticle");
-        //   }}
-        // >
         <mesh position={reticlePos}>
           <Text
             position={[0, 0.5, 0]}
@@ -144,11 +163,9 @@ const AR = () => {
             physicsPosition={reticlePosition}
             // scale={[0.3, 0.3, 0.3]}
             scale={[1.5, 1.5, 1.5]}
-            score={score}
-            setScore={setScore}
+            incrementScore={incrementScore}
           />
         </mesh>
-        // </Interactive>
       )
     );
   };
@@ -192,7 +209,7 @@ const AR = () => {
               <Environment preset="city" />
               {balls.map((key, index) => (
                 <Ball
-                  key={key}
+                  key={index}
                   reticlePos={{
                     x: 0,
                     y: -1.600000023841858,
@@ -200,6 +217,7 @@ const AR = () => {
                   }}
                   // reticlePos={reticlePosition}
                   spawnBall={spawnBall}
+                  incrementScore={incrementScore}
                 />
               ))}
               <Ground
@@ -217,6 +235,7 @@ const AR = () => {
                   z: -3.388284921646118,
                 }}
                 // reticlePos={reticlePosition}
+                score={score}
               />
               <HitTestReticle
                 setReticlePosition={setReticlePosition}
@@ -229,7 +248,7 @@ const AR = () => {
                     z: -3.388284921646118,
                   }}
                   score={score}
-                  setScore={setScore}
+                  incrementScore={incrementScore}
                 /> */}
               {objectList}
               {wsObjectList}

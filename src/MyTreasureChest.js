@@ -10,7 +10,7 @@ let addArrays = (arr1, arr2) => {
   });
 };
 
-export default function Model({ scale, physicsPosition, score, setScore }) {
+export default function Model({ scale, physicsPosition, incrementScore }) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF("/my_treasure_chest.glb");
   const { actions } = useAnimations(animations, group);
@@ -52,7 +52,7 @@ export default function Model({ scale, physicsPosition, score, setScore }) {
     isTrigger: true,
     onCollide: (e) => {
       console.log("collision detected, increasing score");
-      setScore(score + 1);
+      incrementScore();
     },
   }));
 
