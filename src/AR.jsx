@@ -1,11 +1,18 @@
-import React, { useState, Suspense, useCallback } from "react";
+import React, { useState, Suspense } from "react";
 import { ARCanvas, Interactive } from "@react-three/xr";
-import { Physics, useSphere, useBox } from "@react-three/cannon";
+import {
+  Physics,
+  useSphere,
+  useBox,
+  Debug,
+  usePlane,
+} from "@react-three/cannon";
 import { Text, Html, Environment, Box, Sphere } from "@react-three/drei";
 import { v4 as uuid } from "uuid";
 import MyTreasureChest from "./MyTreasureChest";
 import CameraControls from "./CameraControls";
 import HitTestReticle from "./HitTestReticle";
+import { useFrame, useThree } from "@react-three/fiber";
 
 const isProduction = process.env.NODE_ENV === "production";
 const url = isProduction
@@ -16,34 +23,37 @@ const ws = new WebSocket(url);
 const id = uuid().substring(0, 5);
 localStorage.setItem("score", 0);
 
-const randomIntFromInterval = (min, max) => Math.random() * (max - min) + min;
-
-const Ball = ({ reticlePos, spawnBall, incrementScore }) => {
+const Ball = ({ reticlePos }) => {
   const [ref, api] = useSphere(() => ({
     mass: 1,
-    position: [reticlePos.x, reticlePos.y + 2, reticlePos.z + 2.4],
     args: [0.06, 6, 6],
+  }));
+
+  const { camera } = useThree();
+
+  usePlane(() => ({
+    position: [reticlePos.x, reticlePos.y - 2, reticlePos.z],
+    rotation: [-Math.PI / 2, 0, 0],
+    type: "Static",
+    onCollide: () => {
+      api.position.set(
+        camera.position.x,
+        camera.position.y + 0.2,
+        camera.position.z - 2.4
+      );
+      api.velocity.set(0, 0, 0);
+    },
   }));
 
   return (
     <Interactive
       onSelect={() => {
-        api.applyForce(
-          [0, 400, -470],
-          [randomIntFromInterval(-0.01, 0.01), 0, 0]
-        );
-        // incrementScore();
-        spawnBall();
+        api.applyForce([0, 400, -470], [0, 0, 0]);
       }}
     >
       <Sphere
         onClick={() => {
-          api.applyForce(
-            [0, 400, -470],
-            [randomIntFromInterval(-0.01, 0.01), 0, 0]
-          );
-          incrementScore();
-          spawnBall();
+          api.applyForce([0, 400, -470], [0, 0, 0]);
         }}
         ref={ref}
         args={[0.06, 6, 6]}
@@ -54,24 +64,20 @@ const Ball = ({ reticlePos, spawnBall, incrementScore }) => {
   );
 };
 
-const Ground = ({ reticlePos }) => {
-  useBox(() => ({
-    args: [20, 20, 2],
-    position: [reticlePos.x, reticlePos.y - 2 || -0.5, reticlePos.z],
-    rotation: [-Math.PI / 2, 0, 0],
-    type: "Static",
-  }));
-
-  return null;
-};
-
-const BallPlatform = ({ reticlePos, score }) => {
-  const [ref] = useBox(() => ({
+const BallPlatform = ({ score }) => {
+  const [ref, api] = useBox(() => ({
     args: [1, 1, 0.1],
-    position: [reticlePos.x, reticlePos.y + 1, reticlePos.z + 2.4],
     rotation: [-Math.PI / 2, 0, 0],
     type: "Static",
   }));
+
+  useFrame(({ camera }) => {
+    api.position.set(
+      camera.position.x,
+      camera.position.y,
+      camera.position.z - 2.4
+    );
+  });
 
   return (
     <mesh>
@@ -94,20 +100,15 @@ const BallPlatform = ({ reticlePos, score }) => {
 };
 
 const AR = () => {
-  const [reticlePosition, setReticlePosition] = useState([]); // eg. { x: 0, y: -1.600000023841858, z: -2.3510549068450928 }
+  const [reticlePosition, setReticlePosition] = useState([]); // e.g. { x: 0, y: -1.600000023841858, z: -2.3510549068450928 }
   const [objectList, setObjectList] = useState([]);
   const [wsObjectList, setWsObjectList] = useState([]);
   const [clearText, setClearText] = useState("Clear");
+
   let score = localStorage.getItem("score");
   const incrementScore = () => {
     localStorage.setItem("score", ++score);
   };
-  const [balls, setBalls] = useState(["uuid"]);
-
-  const spawnBall = useCallback(
-    (e) => setBalls((balls) => [...balls, uuid()]),
-    []
-  );
 
   ws.onmessage = ({ data }) => {
     data = JSON.parse(data);
@@ -201,32 +202,19 @@ const AR = () => {
           </Html>
           <Physics
             gravity={[0, -30, 0]}
-            defaultContactMaterial={{ restitution: 0.7 }}
+            // defaultContactMaterial={{ restitution: 0.7 }}
           >
             {/* <Debug scale={1}> */}
             <Suspense fallback={null}>
               <ambientLight intensity={0.5} />
               <Environment preset="city" />
-              {balls.map((key, index) => (
-                <Ball
-                  key={index}
-                  reticlePos={{
-                    x: 0,
-                    y: -1.600000023841858,
-                    z: -3.388284921646118,
-                  }}
-                  // reticlePos={reticlePosition}
-                  spawnBall={spawnBall}
-                  incrementScore={incrementScore}
-                />
-              ))}
-              <Ground
-                // reticlePos={{
-                //   x: 0,
-                //   y: -1.600000023841858,
-                //   z: -3.388284921646118,
-                // }}
-                reticlePos={reticlePosition}
+              <Ball
+                reticlePos={{
+                  x: 0,
+                  y: -1.600000023841858,
+                  z: -3.388284921646118,
+                }}
+                incrementScore={incrementScore}
               />
               <BallPlatform
                 reticlePos={{
@@ -234,22 +222,12 @@ const AR = () => {
                   y: -1.600000023841858,
                   z: -3.388284921646118,
                 }}
-                // reticlePos={reticlePosition}
                 score={score}
               />
               <HitTestReticle
                 setReticlePosition={setReticlePosition}
                 handleSelect={() => handleSelect(reticlePosition)}
               />
-              {/* <MyTreasureChest
-                  physicsPosition={{
-                    x: 0,
-                    y: -1.600000023841858,
-                    z: -3.388284921646118,
-                  }}
-                  score={score}
-                  incrementScore={incrementScore}
-                /> */}
               {objectList}
               {wsObjectList}
             </Suspense>

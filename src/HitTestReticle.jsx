@@ -2,7 +2,11 @@ import React, { useRef } from "react";
 import * as THREE from "three";
 import { Interactive, useHitTest } from "@react-three/xr";
 
-const HitTestReticle = ({ setReticlePosition, handleSelect }) => {
+const HitTestReticle = ({
+  setReticlePosition,
+  handleSelect,
+  setPlayerPosition,
+}) => {
   const ref = useRef();
 
   useHitTest((hit) => {
@@ -12,6 +16,7 @@ const HitTestReticle = ({ setReticlePosition, handleSelect }) => {
       ref.current.scale
     );
     setReticlePosition(ref.current.position);
+    // setPlayerPosition([ref.current.position.x - ref.current.position.x, ])
   });
 
   return (
